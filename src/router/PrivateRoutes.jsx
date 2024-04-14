@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Outlet, Navigate, NavLink } from "react-router-dom";
-import { Layout, Button, theme, Menu } from "antd";
+import { CloseOutlined, MenuOutlined } from "@ant-design/icons";
+import { Outlet, Navigate, NavLink, useLocation } from "react-router-dom";
+import { Layout, Button, Menu } from "antd";
 import {
   AnalyticsUpIcon,
   DishIcon,
@@ -10,23 +10,87 @@ import {
   PaysIcon,
   TableRoundIcon,
 } from "../assets/SideIcons";
-import {
-  PlusOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  EyeOutlined,
-  DollarOutlined,
-  BarChartOutlined,
-} from "@ant-design/icons";
-
 import { useToken } from "../store/store";
+
 const { Header, Sider, Content } = Layout;
+
 const PrivateRoutes = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { token } = useToken();
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
+  const location = useLocation();
+
+  const sideBarInfo = [
+    {
+      key: "/menu",
+      icon: (
+        <DishIcon
+          className={
+            collapsed
+              ? "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[30px] h-[30px]"
+              : ""
+          }
+        />
+      ),
+      text: "Menú",
+      to: "/menu",
+    },
+    {
+      key: "/mesas",
+      icon: (
+        <TableRoundIcon
+          className={
+            collapsed
+              ? "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[30px] h-[30px]"
+              : ""
+          }
+        />
+      ),
+      text: "Mesas",
+      to: "/mesas",
+    },
+    {
+      key: "/pedidos",
+      icon: (
+        <NoteCheckIcon
+          className={
+            collapsed
+              ? "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[30px] h-[30px]"
+              : ""
+          }
+        />
+      ),
+      text: "Pedidos",
+      to: "/pedidos",
+    },
+    {
+      key: "/pagos",
+      icon: (
+        <PaysIcon
+          className={
+            collapsed
+              ? "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[30px] h-[30px]"
+              : ""
+          }
+        />
+      ),
+      text: "Pagos",
+      to: "/pagos",
+    },
+    {
+      key: "/informes",
+      icon: (
+        <AnalyticsUpIcon
+          className={
+            collapsed
+              ? "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[30px] h-[30px]"
+              : ""
+          }
+        />
+      ),
+      text: "Analiticas",
+      to: "/informes",
+    },
+  ];
 
   if (!token) return <Navigate to="/login" />;
 
@@ -36,62 +100,52 @@ const PrivateRoutes = () => {
         trigger={null}
         collapsed={collapsed}
         collapsible
-        width={200}
-        className="site-layout-background"
+        width={300}
+        style={{
+          background: "white",
+        }}
+        className="p-4 shadow-2xl shadow-black/25 site-layout-background"
       >
         <Menu
-          theme="dark"
           mode="inline"
-          defaultSelectedKeys={["1"]}
-          style={{ height: "100%" }}
+          selectedKeys={[location.pathname]}
+          style={{ height: "100%", borderInlineEnd: "none" }}
+          className="text-lg"
         >
-          <Menu.Item key="1" icon={<PlusOutlined />}>
-            <NavLink to="/menu">Menú</NavLink>
-          </Menu.Item>
-
-          <Menu.Item key="2" icon={<PlusOutlined />}>
-            <NavLink to="/mesas">Mesa</NavLink>
-          </Menu.Item>
-
-          <Menu.Item key="3" icon={<EyeOutlined />}>
-            <NavLink to="/pedidos">Pedidos</NavLink>
-          </Menu.Item>
-
-          <Menu.Item key="4" icon={<DollarOutlined />}>
-            <NavLink to="/pagos">Pagos</NavLink>
-          </Menu.Item>
-
-          <Menu.Item key="5" icon={<BarChartOutlined />}>
-            <NavLink to="/informes">Analiticas</NavLink>
-          </Menu.Item>
+          {sideBarInfo.map((item) => (
+            <Menu.Item
+              style={{ marginBottom: "16px" }}
+              key={item.key}
+              icon={item.icon}
+            >
+              <NavLink to={item.to}>{item.text}</NavLink>
+            </Menu.Item>
+          ))}
         </Menu>
       </Sider>
       <Layout>
-        <Header
-          style={{
-            padding: 0,
-            background: colorBgContainer,
-          }}
-        >
+        <Header className="flex items-center justify-start gap-4 p-0 mx-8 bg-gray-100">
           <Button
             type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            icon={collapsed ? <MenuOutlined /> : <CloseOutlined />}
             onClick={() => setCollapsed(!collapsed)}
             style={{
               fontSize: "16px",
-              width: 64,
-              height: 64,
+              width: 45,
+              height: 45,
+              background: "white",
+              borderRadius: "12px",
             }}
           />
+          <h1 className="text-2xl font-semibold capitalize">
+            {location.pathname.split("/")[1]}
+          </h1>
         </Header>
         <Content
           style={{
-            margin: "24px 16px",
-            padding: 24,
             minHeight: 280,
-            background: "red",
-            borderRadius: borderRadiusLG,
           }}
+          className="mx-8 my-2 bg-gray-100 border-2 border-black"
         >
           <Outlet />
         </Content>
